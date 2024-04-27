@@ -1,32 +1,36 @@
-# Use small Alpine Linux image
-FROM node:12-alpine
+# 1 - Base Image
+FROM node:12-alpine as base
 
-# Set environment variables
-ENV PORT=5000
+# 2 - Dependencies Stage
+FROM base AS builder
+
 ARG CLIENT_ID
 
-COPY . app/
+WORKDIR /app
 
-WORKDIR app/
+COPY package.json package-lock.json ./
 
-# Make sure dependencies exist for Webpack loaders
-RUN apk add --no-cache \
-  autoconf \
-  automake \
-  bash \
-  g++ \
-  libc6-compat \
-  libjpeg-turbo-dev \
-  libpng-dev \
-  make \
-  nasm 
-RUN npm ci --only-production --silent
+RUN npm ci
 
-# Build production client side React application
+COPY . .
+
 RUN npm run build
 
-# Expose port for Node
-EXPOSE $PORT
+# 3 - Final Client and Server
+FROM base AS production
 
-# Start Node server
-ENTRYPOINT npm run prod
+RUN apk update
+RUN apk add nano
+
+WORKDIR /app
+
+COPY --from=builder /app/dist/ ./dist/
+COPY --from=builder /app/src/server/ ./src/server/
+COPY --from=builder /app/package.json ./
+
+RUN npm install express@4.17.1 cors@2.8.5 cookie-parser@1.4.5 helmet@4.1.1 compression@1.7.4 axios@0.21.1 uuid@8.3.1 dayjs@1.9.3
+RUN npm install -D typescript@4.0.3 ts-node@9.0.0 dotenv@8.2.0
+
+EXPOSE 5000
+
+CMD [ "npm", "run", "prod" ]

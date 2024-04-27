@@ -1,7 +1,9 @@
 node_modules
 dist
 .git
+.github
 .vscode
+.env
 !src
 !public
 !docs

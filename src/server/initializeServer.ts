@@ -1,10 +1,11 @@
-import path from 'path'
+const path = require('path') 
 
-import express, { Router } from 'express'
-import cookieParser from 'cookie-parser'
-import cors from 'cors'
-import helmet from 'helmet'
-import compression from 'compression'
+import { NextFunction, Request, Response, Router } from 'express'
+const express = require("express")
+const cookieParser = require('cookie-parser')
+const cors = require('cors')
+const helmet = require('helmet')
+const compression = require('compression')
 
 export default function initializeServer(router: Router) {
   const app = express()
@@ -18,7 +19,7 @@ export default function initializeServer(router: Router) {
   app.use(helmet())
   app.use(compression())
 
-  app.use((request, response, next) => {
+  app.use((request: Request, response: Response, next: NextFunction) => {
     response.header('Content-Security-Policy', "img-src 'self' *.githubusercontent.com")
 
     return next()
@@ -26,7 +27,7 @@ export default function initializeServer(router: Router) {
 
   app.use(express.static(path.join(__dirname, '../../dist/')))
   app.use('/api', router)
-  app.get('*', (request, response) => {
+  app.get('*', (request: Request, response: Response) => {
     response.sendFile(path.join(__dirname, '../../dist/index.html'))
   })
 

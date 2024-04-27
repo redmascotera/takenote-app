@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid'
-import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
+import dayjs = require('dayjs');
 
 const markdown = `# Welcome to Takenote!
 
