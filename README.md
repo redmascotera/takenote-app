@@ -131,14 +131,11 @@ Follow these instructions to build an image and run a container.
 ```bash
 # Build Docker image
 docker build --build-arg CLIENT_ID=xxx -t takenote:mytag .
+```
 
+```bash
 # Run Docker container in port 5000
-docker run \
--e CLIENT_ID=xxx \
--e CLIENT_SECRET=xxxx \
--e NODE_ENV=development \
--p 5000:5000 \
-takenote:mytag
+docker run -it --rm -e CLIENT_ID=xxx -e CLIENT_SECRET=xxxx -p 5000:5000 takenote:mytag
 ```
 
 Go to `localhost:5000` to view the app.
